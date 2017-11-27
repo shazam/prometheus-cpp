@@ -1,0 +1,7 @@
+0.1
+support for following metric types:
+- counter
+- gauge
+- histogram
+- summary (rolling count of metrics)
+- timers
