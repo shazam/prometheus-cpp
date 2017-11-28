@@ -16,7 +16,7 @@ const string GAUGE_TYPE("gauge");
 const string COUNTER_TYPE("counter");
 const string HISTOGRAM_TYPE("histogram");
 const string SUMMARY_TYPE("summary");
-const string UNTYPED("");
+const string UNTYPED("untyped");
 
 const std::string &to_string(const metric_type &type) {
   switch (type) {
@@ -29,9 +29,7 @@ const std::string &to_string(const metric_type &type) {
 }
 
 void write_help(ostream &os, const prometheus::metric_family &family) {
-  if (family.has_help()) {
-    os << "# HELP " << family.name << ' ' << family.help << '\n';
-  }
+  os << "# HELP " << family.name << ' ' << family.help << '\n';
 }
 
 void write_type(ostream &os, const prometheus::metric_family &family, const string &type) {

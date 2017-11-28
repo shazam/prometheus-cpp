@@ -22,6 +22,12 @@ TEST(gauge_test, inc_value) {
   ASSERT_THAT(testGauge.val(), DoubleEq(4.0));
 }
 
+TEST(gauge_test, inc_by_negative_value) {
+  gauge testGauge;
+  testGauge.inc(-4);
+  ASSERT_THAT(testGauge.val(), DoubleEq(-4.0));
+}
+
 TEST(gauge_test, inc_multiple) {
   gauge testGauge;
   testGauge.inc();

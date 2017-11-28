@@ -31,7 +31,7 @@ total_count_count 3
 )";
 
   metric_registry reg;
-  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count").with_help("something"));
+  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
   auto &total_counter = total_counter_family.add({}, custom_bounds(0.05, 0.1, 0.2, 0.5, 1.0));
   total_counter.observe(.05);
   total_counter.observe(1.);
@@ -43,7 +43,8 @@ total_count_count 3
 }
 
 TEST(text_searializer_histogram_test, without_help_no_buckets) {
-  constexpr auto EXPECTED = R"(# TYPE total_count histogram
+  constexpr auto EXPECTED = R"(# HELP total_count something
+# TYPE total_count histogram
 total_count_bucket{le="+Inf"} 1
 total_count_sum 2
 total_count_count 1
@@ -51,7 +52,7 @@ total_count_count 1
 )";
 
   metric_registry reg;
-  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count"));
+  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
   auto &total_counter = total_counter_family.add({}, custom_bounds());
   total_counter.observe(2.);
 
@@ -61,7 +62,8 @@ total_count_count 1
 }
 
 TEST(text_searializer_histogram_test, with_labels) {
-  constexpr auto EXPECTED = R"(# TYPE total_count histogram
+  constexpr auto EXPECTED = R"(# HELP total_count something
+# TYPE total_count histogram
 total_count_bucket{le="0.5",label1="value1",label2="value2",} 1
 total_count_bucket{le="+Inf",label1="value1",label2="value2",} 1
 total_count_sum{label1="value1",label2="value2",} 0.5
@@ -70,7 +72,7 @@ total_count_count{label1="value1",label2="value2",} 1
 )";
 
   metric_registry reg;
-  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count").with_labels(SOME_LABELS));
+  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something").with_labels(SOME_LABELS));
   auto &total_counter = total_counter_family.add({}, custom_bounds(.5));
   total_counter.observe(0.5);
 
@@ -80,7 +82,8 @@ total_count_count{label1="value1",label2="value2",} 1
 }
 
 TEST(text_searializer_histogram_test, multi_family_metric) {
-  constexpr auto EXPECTED = R"(# TYPE total_count histogram
+  constexpr auto EXPECTED = R"(# HELP total_count something
+# TYPE total_count histogram
 total_count_bucket{le="0.5"} 1
 total_count_bucket{le="+Inf"} 1
 total_count_sum 0.5
@@ -93,7 +96,7 @@ total_count_count{label1="value1",label2="value2",} 1
 )";
   metric_registry reg;
 
-  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count"));
+  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
 
   auto &total_counter0 = total_counter_family.add({}, custom_bounds(.5));
   total_counter0.observe(0.5);
@@ -111,7 +114,7 @@ TEST(text_searializer_histogram_test, nothing_all_empty) {
   constexpr auto EXPECTED = R"()";
   metric_registry reg;
 
-  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count"));
+  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
   total_counter_family.add({}, custom_bounds(.5));
 
   stringstream str;
@@ -121,7 +124,8 @@ TEST(text_searializer_histogram_test, nothing_all_empty) {
 
 
 TEST(text_searializer_histogram_test, skips_empty) {
-  constexpr auto EXPECTED = R"(# TYPE total_count histogram
+  constexpr auto EXPECTED = R"(# HELP total_count something
+# TYPE total_count histogram
 total_count_bucket{le="0.5",label1="value1",label2="value2",} 1
 total_count_bucket{le="+Inf",label1="value1",label2="value2",} 1
 total_count_sum{label1="value1",label2="value2",} 0.5
@@ -130,7 +134,7 @@ total_count_count{label1="value1",label2="value2",} 1
 )";
   metric_registry reg;
 
-  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count"));
+  auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
   total_counter_family.add({}, custom_bounds(.5));
   auto &total_counter = total_counter_family.add(SOME_LABELS, custom_bounds(.5));
   total_counter.observe(0.5);

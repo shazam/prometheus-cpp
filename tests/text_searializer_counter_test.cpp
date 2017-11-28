@@ -16,14 +16,15 @@ const map<string, string> SOME_LABELS = {
 
 }
 
-TEST(text_searializer_counter_test, without_help) {
-  constexpr auto EXPECTED = R"(# TYPE total_count counter
+TEST(text_searializer_counter_test, without_family) {
+  constexpr auto EXPECTED = R"(# HELP total_count Total Request count.
+# TYPE total_count counter
 total_count 2.5
 
 )";
 
   metric_registry reg;
-  auto &total_counter_family = reg.make_counter(metric_family::builder("total_count"));
+  auto &total_counter_family = reg.make_counter(metric_family::builder("total_count", "Total Request count."));
   auto &total_counter = total_counter_family.add();
   total_counter.inc(2.5);
 
@@ -41,7 +42,7 @@ total_count 1
 
   metric_registry reg;
 
-  auto &tag_family = reg.make_family(metric_family::builder("total_count").with_help("Total Request count."));
+  auto &tag_family = reg.make_family(metric_family::builder("total_count", "Total Request count."));
   auto &total_counter_family = reg.make_counter(tag_family);
   auto &total_counter = total_counter_family.add();
 
@@ -54,14 +55,15 @@ total_count 1
 }
 
 TEST(text_searializer_counter_test, with_family_labels) {
-  constexpr auto EXPECTED = R"(# TYPE total_count counter
+  constexpr auto EXPECTED = R"(# HELP total_count Total Request count.
+# TYPE total_count counter
 total_count{label1="value1",label2="value2",} 1
 
 )";
 
   metric_registry reg;
 
-  auto &tag_family = reg.make_family(metric_family::builder("total_count").with_labels(SOME_LABELS));
+  auto &tag_family = reg.make_family(metric_family::builder("total_count", "total_count Total Request count.").with_labels(SOME_LABELS));
 
   auto &total_counter_family = reg.make_counter(tag_family);
   auto &total_counter = total_counter_family.add();
@@ -75,14 +77,15 @@ total_count{label1="value1",label2="value2",} 1
 }
 
 TEST(text_searializer_counter_test, with_timestamp) {
-  constexpr auto EXPECTED = R"(# TYPE total_count counter
+  constexpr auto EXPECTED = R"(# HELP total_count Total Request count.
+# TYPE total_count counter
 total_count{label1="value1",label2="value2",} 0 100000
 
 )";
 
   metric_registry reg;
 
-  auto &tag_family = reg.make_family(metric_family::builder("total_count").with_labels(SOME_LABELS));
+  auto &tag_family = reg.make_family(metric_family::builder("total_count", "total_count Total Request count.").with_labels(SOME_LABELS));
 
   auto &total_counter_family = reg.make_counter(tag_family);
   auto &total_counter = total_counter_family.add();
@@ -96,7 +99,8 @@ total_count{label1="value1",label2="value2",} 0 100000
 }
 
 TEST(text_searializer_counter_test, multi_family_metric) {
-  constexpr auto EXPECTED = R"(# TYPE total_count counter
+  constexpr auto EXPECTED = R"(# HELP total_count Total Request count.
+# TYPE total_count counter
 total_count{label1="value1",label2="value2",} 1
 total_count{label1="value1",label2="value2",label3="value3",} 2
 
@@ -104,7 +108,7 @@ total_count{label1="value1",label2="value2",label3="value3",} 2
 
   metric_registry reg;
 
-  auto &tag_family = reg.make_family(metric_family::builder("total_count").with_labels(SOME_LABELS));
+  auto &tag_family = reg.make_family(metric_family::builder("total_count", "total_count Total Request count.").with_labels(SOME_LABELS));
 
   auto &total_counter_family = reg.make_counter(tag_family);
   auto &total_counter0 = total_counter_family.add();

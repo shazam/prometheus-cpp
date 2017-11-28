@@ -36,7 +36,7 @@ int main() {
 
   cout << "Starting metric client..." << std::endl;
 
-  auto &rpc_duration_family = reg.make_summary(metric_family::builder("rpc_duration"));
+  auto &rpc_duration_family = reg.make_summary(metric_family::builder("rpc_duration", "Duration of the request"));
   auto &rpc_duration = rpc_duration_family.add({}, summary::objectives{
       {.01, .001}, //  1%
       {.05, .001}, //  5%
@@ -45,10 +45,10 @@ int main() {
       {.99, .001}, // 99%
   });
 
-  auto &some_histo_family = reg.make_histogram(metric_family::builder("request_time"));
+  auto &some_histo_family = reg.make_histogram(metric_family::builder("request_time", "How long the response took."));
   auto &some_histo = some_histo_family.add({}, linear_bounds(1, 1, 10));
 
-  auto &request_family = reg.make_counter(metric_family::builder("total_requests"));
+  auto &request_family = reg.make_counter(metric_family::builder("total_requests", "Total number of requests"));
   auto &request_counter = request_family.add({{"somekey", "somevalue"}});
 
   thread worker([&]() {

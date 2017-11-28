@@ -5,13 +5,8 @@
 
 namespace prometheus {
 
-metric_family::builder::builder(std::string name) : name(std::move(name)) {
+metric_family::builder::builder(std::string name, std::string help) : name(std::move(name)), help(std::move(help)) {
   PROMETHEUS_CHECK(valid_metric_name(this->name));
-}
-
-metric_family::builder &metric_family::builder::with_help(const std::string &help) {
-  this->help = help;
-  return *this;
 }
 
 metric_family::builder &metric_family::builder::with_labels(const std::map<std::string, std::string> &labels) {

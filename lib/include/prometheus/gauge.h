@@ -21,9 +21,7 @@ class gauge {
   }
 
   inline void inc(const double value) {
-    if (value > 0.0) {
-      this->value += value;
-    }
+    this->value += value;
   }
 
   inline void dec() {
