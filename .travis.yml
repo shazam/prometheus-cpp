@@ -10,8 +10,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-            - cmake-data
-            - cmake
       env:
          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
@@ -22,8 +20,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-            - cmake-data
-            - cmake
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 
@@ -34,8 +30,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-6
-            - cmake-data
-            - cmake
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
@@ -46,8 +40,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
-            - cmake-data
-            - cmake
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
@@ -58,8 +50,6 @@ matrix:
             - llvm-toolchain-trusty-3.9
           packages:
             - clang-3.9
-            - cmake-data
-            - cmake
       env:
         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
 
@@ -70,8 +60,6 @@ matrix:
             - llvm-toolchain-trusty-4.0
           packages:
             - clang-4.0
-            - cmake-data
-            - cmake
       env:
         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
 
@@ -82,15 +70,12 @@ matrix:
             - llvm-toolchain-trusty-5.0
           packages:
             - clang-5.0
-            - cmake-data
-            - cmake
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
 
 before_install:
-    - eval "${MATRIX_EVAL}"
-
-script:
+  - eval "${MATRIX_EVAL}"
+  - cd /usr/local/
   - cd /usr/local/
   - wget https://cmake.org/files/v3.9/cmake-3.9.3-Linux-x86_64.sh
   - chmod +x cmake-3.9.3-Linux-x86_64.sh
@@ -100,6 +85,8 @@ script:
   - wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
   - unzip ninja-linux.zip
   - rm -rf ninja-linux.zip
+
+script:
   - mkdir build
   - cd build
   - cmake -GNinja ..
