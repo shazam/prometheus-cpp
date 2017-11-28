@@ -75,7 +75,7 @@ matrix:
 
 before_install:
   - eval "${MATRIX_EVAL}"
-  - sudo ./install-deps.sh
+  - ./install-deps.sh
 
 script:
   - mkdir build
