@@ -60,10 +60,6 @@ class summary {
    */
   void observe(double value);
 
-  inline bool empty() const {
-    return current_index == 0;
-  }
-
   /**
    * Helper function to time a function call
    * @param f The function to profile

@@ -110,34 +110,32 @@ total_count_count{label1="value1",label2="value2",} 1
 }
 
 
-TEST(text_searializer_histogram_test, nothing_all_empty) {
+TEST(text_searializer_histogram_test, skips_disabled) {
   constexpr auto EXPECTED = R"()";
   metric_registry reg;
 
   auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
-  total_counter_family.add({}, custom_bounds(.5));
+  auto & total_counter = total_counter_family.add({}, custom_bounds(.5));
+  total_counter.disable();
 
   stringstream str;
   text_serializer::write(str, reg);
   ASSERT_THAT(str.str(), StrEq(EXPECTED));
 }
 
-
-TEST(text_searializer_histogram_test, skips_empty) {
+TEST(text_searializer_histogram_test, print_empty) {
   constexpr auto EXPECTED = R"(# HELP total_count something
 # TYPE total_count histogram
-total_count_bucket{le="0.5",label1="value1",label2="value2",} 1
-total_count_bucket{le="+Inf",label1="value1",label2="value2",} 1
-total_count_sum{label1="value1",label2="value2",} 0.5
-total_count_count{label1="value1",label2="value2",} 1
+total_count_bucket{le="0.5"} 0
+total_count_bucket{le="+Inf"} 0
+total_count_sum 0
+total_count_count 0
 
 )";
   metric_registry reg;
 
   auto &total_counter_family = reg.make_histogram(metric_family::builder("total_count", "something"));
   total_counter_family.add({}, custom_bounds(.5));
-  auto &total_counter = total_counter_family.add(SOME_LABELS, custom_bounds(.5));
-  total_counter.observe(0.5);
 
   stringstream str;
   text_serializer::write(str, reg);

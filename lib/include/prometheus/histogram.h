@@ -30,10 +30,6 @@ struct histogram {
 
   void observe(double value);
 
-  inline bool empty() const {
-    return count == 0;
-  }
-
   template<typename Func>
   void observe_duration(Func f) {
     auto timer = make_scoped_timer(*this);

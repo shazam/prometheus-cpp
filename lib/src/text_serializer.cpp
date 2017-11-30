@@ -55,10 +55,10 @@ void write_name(ostream &os, const prometheus::metric_family &family, const prom
 }
 
 template<typename T>
-bool all_empty(const T &collection) {
+bool all_inactive(const T &collection) {
   return all_of(collection.begin(),
                 collection.end(),
-                [](decltype(collection.front()) &item) { return item.empty(); });
+                [](decltype(collection.front()) &item) { return !item.active; });
 }
 
 /**
@@ -75,27 +75,30 @@ void up_fill(T &source) {
   }
 }
 
-template<typename T>
-void write_timestamp(ostream &os, const T &item) {
-  if (item.timestamp.count() != 0) {
-    os << ' ' << item.timestamp.count();
-  }
-}
-
 } // namespace
 
 namespace prometheus {
 
 template<metric_type TYPE, typename T>
 void write_group(ostream &os, const T &group) {
+
+  if (all_inactive(group.metrics)) {
+    return;
+  }
+
   write_help(os, group.family);
   write_type(os, group.family, to_string(TYPE));
 
   for (const auto &item : group.metrics) {
+    // skip all empty items
+    if (!item.active) {
+      continue;
+    }
+
     write_name(os, group.family, item.labels);
     os << item.val();
-    write_timestamp(os, item);
     os << "\n";
+
   }
   os << '\n';
 }
@@ -104,7 +107,7 @@ void write_histogram(ostream &os, const histogram_vector &group) {
 
 
   // if everything is empty  don't print anything
-  if (all_empty(group.metrics)) {
+  if (all_inactive(group.metrics)) {
     return;
   }
 
@@ -114,7 +117,7 @@ void write_histogram(ostream &os, const histogram_vector &group) {
   for (const auto &item : group.metrics) {
 
     // skip all empty items
-    if (item.empty()) {
+    if (!item.active) {
       continue;
     }
 
@@ -168,7 +171,7 @@ void write_histogram(ostream &os, const histogram_vector &group) {
 void write_summary(ostream &os, const summary_vector &group) {
 
   // if everything is empty  don't print anything
-  if (all_empty(group.metrics)) {
+  if (all_inactive(group.metrics)) {
     return;
   }
 
@@ -178,7 +181,7 @@ void write_summary(ostream &os, const summary_vector &group) {
   for (const auto &item : group.metrics) {
 
     // skip all empty items
-    if (item.empty()) {
+    if (!item.active) {
       continue;
     }
 
@@ -235,6 +238,10 @@ void text_serializer::write(ostream &os, const metric_registry &registry) {
 
   for (const auto &group : registry.summaries) {
     write_summary(os, group);
+  };
+
+  for (const auto &group : registry.untyped) {
+    write_group<metric_type::UNTYPED>(os, group);
   };
 
 }

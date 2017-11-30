@@ -123,12 +123,35 @@ request_duration_count{label1="value1",label2="value2",} 1
 }
 
 
-TEST(text_searializer_summary_test, skips_everything_if_empty) {
+TEST(text_searializer_summary_test, skips_deactive) {
   constexpr auto EXPECTED = R"()";
   metric_registry reg;
   auto &request_duration_family = reg.make_summary(metric_family::builder("request_duration", "something"));
+
+  // Disable these two summaries right away!
+  request_duration_family.add({}, SOME_OBJECTIVES).disable();
+  request_duration_family.add(SOME_LABELS, SOME_OBJECTIVES).disable();
+
+  stringstream str;
+  text_serializer::write(str, reg);
+  ASSERT_THAT(str.str(), StrEq(EXPECTED));
+}
+
+TEST(text_searializer_summary_test, prints_empty) {
+  constexpr auto EXPECTED = R"(# HELP request_duration something
+# TYPE request_duration summary
+request_duration{quantile="0.01"} 0
+request_duration{quantile="0.05"} 0
+request_duration{quantile="0.5"} 0
+request_duration{quantile="0.9"} 0
+request_duration{quantile="0.99"} 0
+request_duration_sum 0
+request_duration_count 0
+
+)";
+  metric_registry reg;
+  auto &request_duration_family = reg.make_summary(metric_family::builder("request_duration", "something"));
   request_duration_family.add({}, SOME_OBJECTIVES);
-  request_duration_family.add(SOME_LABELS, SOME_OBJECTIVES);
 
   stringstream str;
   text_serializer::write(str, reg);

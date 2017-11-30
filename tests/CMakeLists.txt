@@ -5,8 +5,10 @@ enable_testing()
 add_executable(${PROJECT_NAME}
         check_names_test.cpp
         counter_test.cpp
+        untyped_test.cpp
         gauge_test.cpp
         histogram_test.cpp
+        text_searializer_untyped_test.cpp
         text_searializer_counter_test.cpp
         text_searializer_gauge_test.cpp
         text_searializer_histogram_test.cpp

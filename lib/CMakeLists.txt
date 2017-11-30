@@ -5,6 +5,7 @@ set(PUBLIC_HEADER_FILES
         include/prometheus/type_metric.h
         include/prometheus/atomic_double.h
         include/prometheus/counter.h
+        include/prometheus/untyped.h
         include/prometheus/gauge.h
         include/prometheus/histogram.h
         include/prometheus/metric_vector.h

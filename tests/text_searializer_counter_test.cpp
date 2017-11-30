@@ -63,34 +63,12 @@ total_count{label1="value1",label2="value2",} 1
 
   metric_registry reg;
 
-  auto &tag_family = reg.make_family(metric_family::builder("total_count", "total_count Total Request count.").with_labels(SOME_LABELS));
+  auto &tag_family = reg.make_family(metric_family::builder("total_count", "Total Request count.").with_labels(SOME_LABELS));
 
   auto &total_counter_family = reg.make_counter(tag_family);
   auto &total_counter = total_counter_family.add();
 
   total_counter.inc();
-
-  std::stringstream str;
-  text_serializer::write(str, reg);
-
-  ASSERT_THAT(str.str(), StrEq(EXPECTED));
-}
-
-TEST(text_searializer_counter_test, with_timestamp) {
-  constexpr auto EXPECTED = R"(# HELP total_count Total Request count.
-# TYPE total_count counter
-total_count{label1="value1",label2="value2",} 0 100000
-
-)";
-
-  metric_registry reg;
-
-  auto &tag_family = reg.make_family(metric_family::builder("total_count", "total_count Total Request count.").with_labels(SOME_LABELS));
-
-  auto &total_counter_family = reg.make_counter(tag_family);
-  auto &total_counter = total_counter_family.add();
-
-  total_counter.set_timestamp(std::chrono::milliseconds{100000});
 
   std::stringstream str;
   text_serializer::write(str, reg);
@@ -108,7 +86,7 @@ total_count{label1="value1",label2="value2",label3="value3",} 2
 
   metric_registry reg;
 
-  auto &tag_family = reg.make_family(metric_family::builder("total_count", "total_count Total Request count.").with_labels(SOME_LABELS));
+  auto &tag_family = reg.make_family(metric_family::builder("total_count", "Total Request count.").with_labels(SOME_LABELS));
 
   auto &total_counter_family = reg.make_counter(tag_family);
   auto &total_counter0 = total_counter_family.add();
